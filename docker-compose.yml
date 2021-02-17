@@ -1,0 +1,14 @@
+version: "3.7"
+services:
+  database:
+    image: "postgres"
+    env_file:
+      - .env
+    network_mode: "host"
+  nix_blog:
+    build: .
+    env_file:
+      - .env
+    network_mode: "host"
+    depends_on:
+      - "database"
