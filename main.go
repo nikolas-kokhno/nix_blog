@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/nikolas-kokhno/nix_blog/models"
+	"github.com/nikolas-kokhno/nix_blog/routers"
 	"github.com/spf13/viper"
 )
 
@@ -33,5 +34,6 @@ func initConfig() error {
 }
 
 func Run(e *echo.Echo) {
+	routers.InitRoutes(e)
 	e.Logger.Fatal(e.Start(viper.GetString("port")))
 }

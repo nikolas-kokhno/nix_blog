@@ -1,11 +1,11 @@
 package models
 
-import "github.com/jinzhu/gorm"
-
 type Users struct {
-	gorm.Model
-	Login     string `gorm:"size:30;" json:"login"`
-	Password  string `gorm:"size:30;" json:"password"`
-	FirstName string `gorm:"size:30;" json:"first_name"`
-	LastName  string `gorm:"size:30;" json:"last_name"`
+	ID       int64  `gorm:"primary_key;auto_increment;not_null" json:"id"`
+	Name     string `gorm:"size:80" json:"name"`
+	Username string `gorm:"size:80;unique" json:"username"`
+	Password string `gorm:"size:80" json:"password"`
+	Email    string `gorm:"size:60" json:"email"`
+	Phone    string `gorm:"size:30" json:"phone"`
+	Website  string `gorm:"size:40" json:"website"`
 }
