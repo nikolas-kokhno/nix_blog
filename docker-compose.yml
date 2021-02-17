@@ -12,3 +12,4 @@ services:
     network_mode: "host"
     depends_on:
       - "database"
+    command: bash -c "./wait-for-it.sh --host=localhost --port=5432 --timeout=60 && /app/src/nix_blog --initDB"

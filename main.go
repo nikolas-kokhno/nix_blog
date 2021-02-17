@@ -2,8 +2,10 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/labstack/echo"
+	"github.com/nikolas-kokhno/nix_blog/models"
 	"github.com/spf13/viper"
 )
 
@@ -11,6 +13,11 @@ func main() {
 	/* Initialize config */
 	if err := initConfig(); err != nil {
 		log.Fatalf("Failed to load config file: %s", err.Error())
+	}
+
+	/* Initialize database and start migration */
+	if len(os.Args) > 1 && os.Args[1] == "--initDB" {
+		models.InitDatabase()
 	}
 
 	/* Create and start server */
