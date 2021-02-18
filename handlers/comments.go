@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/nikolas-kokhno/nix_blog/models"
 )
 

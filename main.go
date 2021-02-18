@@ -4,11 +4,18 @@ import (
 	"log"
 	"os"
 
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	"github.com/nikolas-kokhno/nix_blog/models"
 	"github.com/nikolas-kokhno/nix_blog/routers"
 	"github.com/spf13/viper"
 )
+
+// @title Blog API
+// @version 1.0
+// @description REST API server from NIX education
+
+// @host localhost:8181
+// @BasePath /api/v1
 
 func main() {
 	/* Initialize config */

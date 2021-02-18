@@ -1,0 +1,9 @@
+basePath: /api/v1
+host: localhost:8181
+info:
+  contact: {}
+  description: REST API server from NIX education
+  title: Blog API
+  version: "1.0"
+paths: {}
+swagger: "2.0"
