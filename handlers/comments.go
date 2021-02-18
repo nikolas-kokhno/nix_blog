@@ -10,6 +10,14 @@ import (
 
 var emailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 
+// @Summary Get comment by ID
+// @Tags Comments
+// @Description returning comment data by ID
+// @Accept json
+// @Produce json
+// @Param id path int true "Comment ID"
+// @Success 200 {object} models.Comments
+// @Router /comments/{id} [get]
 func GetCommentByID(c echo.Context) error {
 	commentModel := new(models.Comments)
 
@@ -26,6 +34,17 @@ func GetCommentByID(c echo.Context) error {
 	})
 }
 
+// @Summary Get all comments
+// @Tags Comments
+// @Description returning all comments
+// @ModuleID getAllComments
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} SuccessResponse
+// @Failure 400,404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure default {object} ErrorResponse
+// @Router /comments [get]
 func GetAllComments(c echo.Context) error {
 	commentsModel := new([]models.Comments)
 	post_id := c.QueryParam("post_id")
@@ -53,6 +72,18 @@ func GetAllComments(c echo.Context) error {
 	})
 }
 
+// @Summary Create new comments
+// @Tags Comments
+// @Security userLogin
+// @Description created new comments
+// @ModuleID createNewComments
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} SuccessResponse
+// @Failure 400,404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure default {object} ErrorResponse
+// @Router /comments [post]
 func CreateNewComment(c echo.Context) error {
 	commentModel := new(models.Comments)
 	if err := c.Bind(commentModel); err != nil {
@@ -90,6 +121,18 @@ func CreateNewComment(c echo.Context) error {
 	return c.JSON(http.StatusOK, commentModel)
 }
 
+// @Summary Update comment by ID
+// @Tags Comments
+// @Security userLogin
+// @Description updated comment data
+// @ModuleID updateCommentByID
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} SuccessResponse
+// @Failure 400,404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure default {object} ErrorResponse
+// @Router /comments/{id} [put]
 func UpdateCommentByID(c echo.Context) error {
 	commentModel := new(models.Comments)
 	if err := c.Bind(commentModel); err != nil {
@@ -133,6 +176,18 @@ func UpdateCommentByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, commentModel)
 }
 
+// @Summary Delete comment by ID
+// @Tags Comments
+// @Security userLogin
+// @Description deleted comment data
+// @ModuleID deleteCommentByID
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} SuccessResponse
+// @Failure 400,404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure default {object} ErrorResponse
+// @Router /comments/{id} [delete]
 func DeleteCommentByID(c echo.Context) error {
 	commentModel := new(models.Comments)
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&commentModel).Error; err != nil {

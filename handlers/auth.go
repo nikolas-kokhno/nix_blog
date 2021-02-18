@@ -20,6 +20,17 @@ func generateToken(username string) *jwt.Token {
 	return token
 }
 
+// @Summary User login
+// @Tags Auth
+// @Description user sign in
+// @ModuleID userLogin
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} SuccessResponse
+// @Failure 400,404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure default {object} ErrorResponse
+// @Router /auth/login [post]
 func Login(c echo.Context) error {
 	userModel := new(models.Users)
 	if err := c.Bind(userModel); err != nil {
@@ -64,6 +75,17 @@ func Login(c echo.Context) error {
 	return echo.ErrUnauthorized
 }
 
+// @Summary User signup
+// @Tags Auth
+// @Description user sign up
+// @ModuleID userSignup
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} SuccessResponse
+// @Failure 400,404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure default {object} ErrorResponse
+// @Router /auth/signup [post]
 func SignUp(c echo.Context) error {
 	userModel := new(models.Users)
 	if err := c.Bind(userModel); err != nil {

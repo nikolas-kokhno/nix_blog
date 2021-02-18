@@ -17,6 +17,10 @@ import (
 // @host localhost:8181
 // @BasePath /api/v1
 
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+
 func main() {
 	/* Initialize config */
 	if err := initConfig(); err != nil {

@@ -7,6 +7,15 @@ import (
 	"github.com/nikolas-kokhno/nix_blog/models"
 )
 
+// @Summary Get post by ID
+// @Tags Posts
+// @Description returning post data by ID
+// @ID get-string-by-int
+// @Accept json
+// @Produce json
+// @Param id path int true "Post ID"
+// @Success 200 {object} models.Posts
+// @Router /posts/{id} [get]
 func GetPostByID(c echo.Context) error {
 	postModel := new(models.Posts)
 
@@ -23,6 +32,17 @@ func GetPostByID(c echo.Context) error {
 	})
 }
 
+// @Summary Get all posts
+// @Tags Posts
+// @Description returning all post
+// @ModuleID getAllPosts
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} SuccessResponse
+// @Failure 400,404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure default {object} ErrorResponse
+// @Router /posts [get]
 func GetAllPosts(c echo.Context) error {
 	postModel := new([]models.Posts)
 	user_id := c.QueryParam("user_id")
@@ -50,6 +70,18 @@ func GetAllPosts(c echo.Context) error {
 	})
 }
 
+// @Summary Create new post
+// @Tags Posts
+// @Security userLogin
+// @Description created new post
+// @ModuleID createNewPost
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} SuccessResponse
+// @Failure 400,404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure default {object} ErrorResponse
+// @Router /posts [post]
 func CreateNewPost(c echo.Context) error {
 	postModel := new(models.Posts)
 	if err := c.Bind(postModel); err != nil {
@@ -76,6 +108,18 @@ func CreateNewPost(c echo.Context) error {
 	return c.JSON(http.StatusOK, postModel)
 }
 
+// @Summary Update post by ID
+// @Tags Posts
+// @Security userLogin
+// @Description updated post data
+// @ModuleID updatePostByID
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} SuccessResponse
+// @Failure 400,404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure default {object} ErrorResponse
+// @Router /posts/{id} [put]
 func UpdatePostByID(c echo.Context) error {
 	postModel := new(models.Posts)
 	if err := c.Bind(postModel); err != nil {
@@ -113,6 +157,18 @@ func UpdatePostByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, postModel)
 }
 
+// @Summary Delete post by ID
+// @Tags Posts
+// @Security userLogin
+// @Description deleted post data
+// @ModuleID deletePostByID
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} SuccessResponse
+// @Failure 400,404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Failure default {object} ErrorResponse
+// @Router /posts/{id} [delete]
 func DeletePostByID(c echo.Context) error {
 	postModel := new(models.Posts)
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&postModel).Error; err != nil {
