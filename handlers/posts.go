@@ -57,10 +57,10 @@ func CreateNewPost(c echo.Context) error {
 	}
 
 	/* Validate required request field */
-	if postModel.Title == "" || postModel.Body == "" {
+	if postModel.Title == "" || postModel.Body == "" || postModel.UserID <= 0 {
 		return c.JSON(http.StatusBadRequest, ErrorResponse{
 			Status:  "error",
-			Message: "Fields: <title>, <body> are required",
+			Message: "Fields: <title>, <body>, <user_id> are required",
 		})
 	}
 

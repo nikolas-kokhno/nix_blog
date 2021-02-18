@@ -100,10 +100,10 @@ func UpdateCommentByID(c echo.Context) error {
 	}
 
 	/* Validate required request field */
-	if commentModel.Name == "" || commentModel.Email == "" || commentModel.Body == "" {
+	if commentModel.Name == "" || commentModel.Email == "" || commentModel.Body == "" || commentModel.PostId <= 0 {
 		return c.JSON(http.StatusBadRequest, ErrorResponse{
 			Status:  "error",
-			Message: "Fields: <name>, <email>, <body> are required",
+			Message: "Fields: <name>, <email>, <body>, <user_id> are required",
 		})
 	}
 
@@ -123,7 +123,13 @@ func UpdateCommentByID(c echo.Context) error {
 		})
 	}
 
-	models.DB.Model(&commentModel).Update(models.Comments{Name: commentModel.Name, Email: commentModel.Email, Body: commentModel.Body})
+	if err := models.DB.Model(&commentModel).Update(models.Comments{Name: commentModel.Name, Email: commentModel.Email, Body: commentModel.Body}).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, ErrorResponse{
+			Status:  "error",
+			Message: err.Error(),
+		})
+	}
+
 	return c.JSON(http.StatusOK, commentModel)
 }
 
