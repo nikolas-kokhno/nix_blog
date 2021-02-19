@@ -21,6 +21,10 @@ github.com/go-openapi/jsonreference
 github.com/go-openapi/spec
 # github.com/go-openapi/swag v0.19.12
 github.com/go-openapi/swag
+# github.com/go-playground/assert/v2 v2.0.1
+## explicit
+# github.com/gobuffalo/logger v1.0.3
+## explicit
 # github.com/hashicorp/hcl v1.0.0
 github.com/hashicorp/hcl
 github.com/hashicorp/hcl/hcl/ast

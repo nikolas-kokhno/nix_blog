@@ -38,6 +38,30 @@ definitions:
       user_id:
         type: integer
     type: object
+  models.UserLogin:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  models.Users:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      username:
+        type: string
+      website:
+        type: string
+    type: object
 host: localhost:8181
 info:
   contact: {}
@@ -50,6 +74,13 @@ paths:
       consumes:
       - application/json
       description: user sign in
+      parameters:
+      - description: Enter your username and password
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserLogin'
       produces:
       - application/json
       responses:
@@ -81,6 +112,13 @@ paths:
       consumes:
       - application/json
       description: user sign up
+      parameters:
+      - description: Enter your registration details
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Users'
       produces:
       - application/json
       responses:
@@ -142,6 +180,13 @@ paths:
       consumes:
       - application/json
       description: created new comments
+      parameters:
+      - description: Enter comment data to create a comment
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Comments'
       produces:
       - application/json
       responses:
@@ -166,7 +211,7 @@ paths:
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
       security:
-      - userLogin: []
+      - ApiKeyAuth: []
       summary: Create new comments
       tags:
       - Comments
@@ -175,6 +220,12 @@ paths:
       consumes:
       - application/json
       description: deleted comment data
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -199,7 +250,7 @@ paths:
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
       security:
-      - userLogin: []
+      - ApiKeyAuth: []
       summary: Delete comment by ID
       tags:
       - Comments
@@ -227,6 +278,18 @@ paths:
       consumes:
       - application/json
       description: updated comment data
+      parameters:
+      - description: Comment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Enter comment data to create a comment
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Comments'
       produces:
       - application/json
       responses:
@@ -251,7 +314,7 @@ paths:
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
       security:
-      - userLogin: []
+      - ApiKeyAuth: []
       summary: Update comment by ID
       tags:
       - Comments
@@ -290,6 +353,13 @@ paths:
       consumes:
       - application/json
       description: created new post
+      parameters:
+      - description: Enter post data to create a new post
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Posts'
       produces:
       - application/json
       responses:
@@ -314,7 +384,7 @@ paths:
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
       security:
-      - userLogin: []
+      - ApiKeyAuth: []
       summary: Create new post
       tags:
       - Posts
@@ -323,6 +393,12 @@ paths:
       consumes:
       - application/json
       description: deleted post data
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -347,7 +423,7 @@ paths:
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
       security:
-      - userLogin: []
+      - ApiKeyAuth: []
       summary: Delete post by ID
       tags:
       - Posts
@@ -376,6 +452,18 @@ paths:
       consumes:
       - application/json
       description: updated post data
+      parameters:
+      - description: Post ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Enter post data to update a post
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.Posts'
       produces:
       - application/json
       responses:
@@ -400,7 +488,7 @@ paths:
           schema:
             $ref: '#/definitions/handlers.ErrorResponse'
       security:
-      - userLogin: []
+      - ApiKeyAuth: []
       summary: Update post by ID
       tags:
       - Posts

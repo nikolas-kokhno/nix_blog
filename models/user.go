@@ -9,3 +9,8 @@ type Users struct {
 	Phone    string `gorm:"size:30" json:"phone"`
 	Website  string `gorm:"size:40" json:"website"`
 }
+
+type UserLogin struct {
+	Username string `gorm:"size:80;unique" json:"username"`
+	Password string `gorm:"size:80" json:"password"`
+}

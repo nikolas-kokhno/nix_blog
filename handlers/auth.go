@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/nikolas-kokhno/nix_blog/models"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
-	"github.com/nikolas-kokhno/nix_blog/models"
 	"github.com/spf13/viper"
 )
 
@@ -24,8 +25,9 @@ func generateToken(username string) *jwt.Token {
 // @Tags Auth
 // @Description user sign in
 // @ModuleID userLogin
-// @Accept  json
-// @Produce  json
+// @Accept json
+// @Produce json
+// @Param data body models.UserLogin true "Enter your username and password"
 // @Success 200 {object} SuccessResponse
 // @Failure 400,404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
@@ -34,7 +36,7 @@ func generateToken(username string) *jwt.Token {
 func Login(c echo.Context) error {
 	userModel := new(models.Users)
 	if err := c.Bind(userModel); err != nil {
-		return c.JSON(http.StatusInternalServerError, ErrorResponse{
+		return c.JSON(http.StatusInternalServerError, MessageResponse{
 			Status:  "error",
 			Message: err.Error(),
 		})
@@ -42,7 +44,7 @@ func Login(c echo.Context) error {
 
 	/* Validate required request field */
 	if userModel.Username == "" || userModel.Password == "" {
-		return c.JSON(http.StatusBadRequest, ErrorResponse{
+		return c.JSON(http.StatusBadRequest, MessageResponse{
 			Status:  "error",
 			Message: "Fields: <username>, <password> are required",
 		})
@@ -50,7 +52,7 @@ func Login(c echo.Context) error {
 
 	/* Validate characters request field */
 	if len(userModel.Username) < 3 || len(userModel.Password) < 3 {
-		return c.JSON(http.StatusBadRequest, ErrorResponse{
+		return c.JSON(http.StatusBadRequest, MessageResponse{
 			Status:  "error",
 			Message: "Fields: <username>, <password> must be more than 2 characters",
 		})
@@ -61,7 +63,7 @@ func Login(c echo.Context) error {
 
 		t, err := token.SignedString([]byte(viper.GetString("secretJWT")))
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, ErrorResponse{
+			return c.JSON(http.StatusInternalServerError, MessageResponse{
 				Status:  "error",
 				Message: err.Error(),
 			})
@@ -81,6 +83,7 @@ func Login(c echo.Context) error {
 // @ModuleID userSignup
 // @Accept  json
 // @Produce  json
+// @Param data body models.Users true "Enter your registration details"
 // @Success 200 {object} SuccessResponse
 // @Failure 400,404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
@@ -89,7 +92,7 @@ func Login(c echo.Context) error {
 func SignUp(c echo.Context) error {
 	userModel := new(models.Users)
 	if err := c.Bind(userModel); err != nil {
-		return c.JSON(http.StatusInternalServerError, ErrorResponse{
+		return c.JSON(http.StatusInternalServerError, MessageResponse{
 			Status:  "error",
 			Message: err.Error(),
 		})
@@ -97,7 +100,7 @@ func SignUp(c echo.Context) error {
 
 	/* Validate required request field */
 	if userModel.Username == "" || userModel.Password == "" || userModel.Name == "" || userModel.Email == "" {
-		return c.JSON(http.StatusBadRequest, ErrorResponse{
+		return c.JSON(http.StatusBadRequest, MessageResponse{
 			Status:  "error",
 			Message: "Fields: <username>, <password>, <name>, <email> are required",
 		})
@@ -105,7 +108,7 @@ func SignUp(c echo.Context) error {
 
 	/* Validate characters request field */
 	if len(userModel.Username) < 3 || len(userModel.Password) < 3 || len(userModel.Name) < 3 {
-		return c.JSON(http.StatusBadRequest, ErrorResponse{
+		return c.JSON(http.StatusBadRequest, MessageResponse{
 			Status:  "error",
 			Message: "Fields: <username>, <password>, <name> must be more than 2 characters",
 		})
@@ -113,14 +116,14 @@ func SignUp(c echo.Context) error {
 
 	/* Check for valid email */
 	if !isEmailValid(userModel.Email) {
-		return c.JSON(http.StatusBadRequest, ErrorResponse{
+		return c.JSON(http.StatusBadRequest, MessageResponse{
 			Status:  "error",
 			Message: "Field <email> is not valid. For example: test@test.com",
 		})
 	}
 
 	if err := models.DB.Create(&userModel).Error; err != nil {
-		return c.JSON(http.StatusInternalServerError, ErrorResponse{
+		return c.JSON(http.StatusInternalServerError, MessageResponse{
 			Status:  "error",
 			Message: err.Error(),
 		})
@@ -129,7 +132,7 @@ func SignUp(c echo.Context) error {
 	token := generateToken(userModel.Username)
 	t, err := token.SignedString([]byte(viper.GetString("secretJWT")))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, ErrorResponse{
+		return c.JSON(http.StatusInternalServerError, MessageResponse{
 			Status:  "error",
 			Message: err.Error(),
 		})

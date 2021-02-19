@@ -37,6 +37,17 @@ var doc = `{
                     "Auth"
                 ],
                 "summary": "User login",
+                "parameters": [
+                    {
+                        "description": "Enter your username and password",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserLogin"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -84,6 +95,17 @@ var doc = `{
                     "Auth"
                 ],
                 "summary": "User signup",
+                "parameters": [
+                    {
+                        "description": "Enter your registration details",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Users"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -167,7 +189,7 @@ var doc = `{
             "post": {
                 "security": [
                     {
-                        "userLogin": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "created new comments",
@@ -181,6 +203,17 @@ var doc = `{
                     "Comments"
                 ],
                 "summary": "Create new comments",
+                "parameters": [
+                    {
+                        "description": "Enter comment data to create a comment",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Comments"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -249,7 +282,7 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "userLogin": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "updated comment data",
@@ -263,6 +296,24 @@ var doc = `{
                     "Comments"
                 ],
                 "summary": "Update comment by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Comment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Enter comment data to create a comment",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Comments"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -299,7 +350,7 @@ var doc = `{
             "delete": {
                 "security": [
                     {
-                        "userLogin": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "deleted comment data",
@@ -313,6 +364,15 @@ var doc = `{
                     "Comments"
                 ],
                 "summary": "Delete comment by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Comment ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -396,7 +456,7 @@ var doc = `{
             "post": {
                 "security": [
                     {
-                        "userLogin": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "created new post",
@@ -410,6 +470,17 @@ var doc = `{
                     "Posts"
                 ],
                 "summary": "Create new post",
+                "parameters": [
+                    {
+                        "description": "Enter post data to create a new post",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Posts"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -479,7 +550,7 @@ var doc = `{
             "put": {
                 "security": [
                     {
-                        "userLogin": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "updated post data",
@@ -493,6 +564,24 @@ var doc = `{
                     "Posts"
                 ],
                 "summary": "Update post by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Post ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Enter post data to update a post",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Posts"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -529,7 +618,7 @@ var doc = `{
             "delete": {
                 "security": [
                     {
-                        "userLogin": []
+                        "ApiKeyAuth": []
                     }
                 ],
                 "description": "deleted post data",
@@ -543,6 +632,15 @@ var doc = `{
                     "Posts"
                 ],
                 "summary": "Delete post by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Post ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -635,6 +733,43 @@ var doc = `{
                 },
                 "user_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.UserLogin": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Users": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
                 }
             }
         }

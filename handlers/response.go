@@ -5,7 +5,7 @@ type SuccessResponse struct {
 	Data   interface{} `json:"data"`
 }
 
-type ErrorResponse struct {
+type MessageResponse struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
 }

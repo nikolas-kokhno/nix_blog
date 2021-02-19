@@ -4,9 +4,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/labstack/echo/v4"
 	"github.com/nikolas-kokhno/nix_blog/models"
 	"github.com/nikolas-kokhno/nix_blog/routers"
+
+	"github.com/labstack/echo/v4"
 	"github.com/spf13/viper"
 )
 
