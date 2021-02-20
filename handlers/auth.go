@@ -11,14 +11,26 @@ import (
 	"github.com/spf13/viper"
 )
 
-func generateToken(username string) *jwt.Token {
+func generateToken(id int64, username, email string) *jwt.Token {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
+	claims["id"] = id
 	claims["username"] = username
+	claims["email"] = email
 	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
 
 	return token
+}
+
+func decodeToken(jwtToken string) (*jwt.Token, error) {
+	claims := jwt.MapClaims{}
+
+	token, err := jwt.ParseWithClaims(jwtToken[7:], claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(viper.GetString("secretJWT")), nil
+	})
+
+	return token, err
 }
 
 // @Summary User login
@@ -58,8 +70,8 @@ func Login(c echo.Context) error {
 		})
 	}
 
-	if !models.DB.Where("username = ? AND password = ?", userModel.Username, userModel.Password).Find(&models.Users{}).RecordNotFound() {
-		token := generateToken(userModel.Username)
+	if !models.DB.Where("username = ? AND password = ?", userModel.Username, userModel.Password).Find(&userModel).RecordNotFound() {
+		token := generateToken(userModel.ID, userModel.Username, userModel.Email)
 
 		t, err := token.SignedString([]byte(viper.GetString("secretJWT")))
 		if err != nil {
@@ -129,7 +141,7 @@ func SignUp(c echo.Context) error {
 		})
 	}
 
-	token := generateToken(userModel.Username)
+	token := generateToken(userModel.ID, userModel.Username, userModel.Email)
 	t, err := token.SignedString([]byte(viper.GetString("secretJWT")))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, MessageResponse{

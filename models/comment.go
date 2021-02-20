@@ -6,4 +6,5 @@ type Comments struct {
 	Email  string `gorm:"not null" json:"email"`
 	Body   string `gorm:"not null" json:"body"`
 	PostId int64  `gorm:"not null" json:"post_id"`
+	UserId int64  `gorm:"not null" json:"user_id"`
 }

@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/nikolas-kokhno/nix_blog/models"
 
 	"github.com/labstack/echo/v4"
@@ -21,7 +21,8 @@ import (
 func GetPostByID(c echo.Context) error {
 	postModel := new(models.Posts)
 
-	if err := models.DB.Where("id = ?", c.Param("id")).First(&postModel).Error; err != nil {
+	err := models.DB.Where("id = ?", c.Param("id")).First(&postModel).Error
+	if err != nil {
 		return c.JSON(http.StatusNotFound, MessageResponse{
 			Status:  "error",
 			Message: err.Error(),
@@ -92,10 +93,10 @@ func CreateNewPost(c echo.Context) error {
 	}
 
 	/* Validate required request field */
-	if postModel.Title == "" || postModel.Body == "" || postModel.UserID <= 0 {
+	if postModel.Title == "" || postModel.Body == "" {
 		return c.JSON(http.StatusBadRequest, MessageResponse{
 			Status:  "error",
-			Message: "Fields: <title>, <body>, <user_id> are required",
+			Message: "Fields: <title>, <body> are required",
 		})
 	}
 
@@ -107,7 +108,25 @@ func CreateNewPost(c echo.Context) error {
 		})
 	}
 
-	models.DB.Create(&postModel)
+	tokenString := c.Request().Header.Get("Authorization")
+	token, err := decodeToken(tokenString)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, MessageResponse{
+			Status:  "error",
+			Message: "Failed to decode you token",
+		})
+	}
+	calimsMap := token.Claims.(jwt.MapClaims)
+	postModel.UserID = int64(calimsMap["id"].(float64))
+
+	err = models.DB.Create(&postModel).Error
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, MessageResponse{
+			Status:  "error",
+			Message: err.Error(),
+		})
+	}
+
 	return c.JSON(http.StatusCreated, postModel)
 }
 
@@ -160,9 +179,26 @@ func UpdatePostByID(c echo.Context) error {
 		})
 	}
 
-	fmt.Println(postModel.Title)
+	/* Checking if access */
+	tokenString := c.Request().Header.Get("Authorization")
+	token, err := decodeToken(tokenString)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, MessageResponse{
+			Status:  "error",
+			Message: "Failed to decode you token",
+		})
+	}
+	calimsMap := token.Claims.(jwt.MapClaims)
+
+	if int64(calimsMap["id"].(float64)) != postData.UserID {
+		return c.JSON(http.StatusForbidden, MessageResponse{
+			Status:  "error",
+			Message: "Failed to edit, insufficient access rights",
+		})
+	}
 
 	models.DB.Model(&models.Posts{}).Where("id = ?", postID).Updates(models.Posts{Title: postModel.Title, Body: postModel.Body})
+
 	return c.JSON(http.StatusOK, MessageResponse{
 		Status:  "success",
 		Message: "Post data updated successfully!",
@@ -191,7 +227,31 @@ func DeletePostByID(c echo.Context) error {
 		})
 	}
 
-	models.DB.Delete(&postModel)
+	/* Checking if access */
+	tokenString := c.Request().Header.Get("Authorization")
+	token, err := decodeToken(tokenString)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, MessageResponse{
+			Status:  "error",
+			Message: "Failed to decode you token",
+		})
+	}
+	calimsMap := token.Claims.(jwt.MapClaims)
+
+	if int64(calimsMap["id"].(float64)) != postModel.UserID {
+		return c.JSON(http.StatusForbidden, MessageResponse{
+			Status:  "error",
+			Message: "Failed to edit, insufficient access rights",
+		})
+	}
+
+	err = models.DB.Delete(&postModel).Error
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, MessageResponse{
+			Status:  "error",
+			Message: err.Error(),
+		})
+	}
 
 	return c.JSON(http.StatusOK, MessageResponse{
 		Status:  "success",

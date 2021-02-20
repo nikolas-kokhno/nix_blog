@@ -53,7 +53,7 @@ func RunMigrations(db *gorm.DB) {
 	db.Create(&Posts{Title: "qui est esse", Body: "quia et suscipit\nsuscipit recusandae", UserID: 2})
 	db.Create(&Posts{Title: "eum et est occaecati", Body: "quia et suscipit\nsuscipit recusandae", UserID: 3})
 
-	db.Create(&Comments{Name: "Leanne Graham", Email: "Sincere@april.biz", Body: "laudantium enim quasi", PostId: 1})
-	db.Create(&Comments{Name: "Antonette", Email: "Shanna@melissa.tv", Body: "laudantium enim quasi", PostId: 2})
-	db.Create(&Comments{Name: "Samantha", Email: "Nathan@yesenia.net", Body: "laudantium enim quasi", PostId: 3})
+	db.Create(&Comments{Name: "Leanne Graham", Email: "Sincere@april.biz", Body: "laudantium enim quasi", PostId: 1, UserId: 1})
+	db.Create(&Comments{Name: "Antonette", Email: "Shanna@melissa.tv", Body: "laudantium enim quasi", PostId: 2, UserId: 2})
+	db.Create(&Comments{Name: "Samantha", Email: "Nathan@yesenia.net", Body: "laudantium enim quasi", PostId: 3, UserId: 3})
 }

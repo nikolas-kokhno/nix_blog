@@ -13,7 +13,6 @@ import (
 func InitRoutes(e *echo.Echo) {
 	/* Create middleware */
 	e.Use(middleware.CORS())
-	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
 	/* Swagger documentation */

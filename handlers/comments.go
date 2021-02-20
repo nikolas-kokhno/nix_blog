@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"regexp"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/nikolas-kokhno/nix_blog/models"
 
 	"github.com/labstack/echo/v4"
@@ -96,28 +97,33 @@ func CreateNewComment(c echo.Context) error {
 	}
 
 	/* Validate required request field */
-	if commentModel.Name == "" || commentModel.Email == "" || commentModel.Body == "" {
+	if commentModel.Body == "" || commentModel.PostId <= 0 {
 		return c.JSON(http.StatusBadRequest, MessageResponse{
 			Status:  "error",
-			Message: "Fields: <name>, <email>, <body> are required",
+			Message: "Fields: <body>, <post_id> are required",
 		})
 	}
 
 	/* Validate characters request field */
-	if len(commentModel.Name) < 3 || len(commentModel.Email) < 3 || len(commentModel.Body) < 3 {
+	if len(commentModel.Body) < 3 {
 		return c.JSON(http.StatusBadRequest, MessageResponse{
 			Status:  "error",
-			Message: "Fields: <name>, <email>, <body> must be more than 2 characters",
+			Message: "Fields: <body> must be more than 2 characters",
 		})
 	}
 
-	/* Check for valid email */
-	if !isEmailValid(commentModel.Email) {
-		return c.JSON(http.StatusBadRequest, MessageResponse{
+	tokenString := c.Request().Header.Get("Authorization")
+	token, err := decodeToken(tokenString)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, MessageResponse{
 			Status:  "error",
-			Message: "email is not valid",
+			Message: "Failed to decode you token",
 		})
 	}
+	calimsMap := token.Claims.(jwt.MapClaims)
+	commentModel.Email = calimsMap["email"].(string)
+	commentModel.Name = calimsMap["username"].(string)
+	commentModel.UserId = int64(calimsMap["id"].(float64))
 
 	models.DB.Create(&commentModel)
 	return c.JSON(http.StatusCreated, commentModel)
@@ -148,26 +154,18 @@ func UpdateCommentByID(c echo.Context) error {
 	}
 
 	/* Validate required request field */
-	if commentModel.Name == "" || commentModel.Email == "" || commentModel.Body == "" || commentModel.PostId <= 0 {
+	if commentModel.Body == "" {
 		return c.JSON(http.StatusBadRequest, MessageResponse{
 			Status:  "error",
-			Message: "Fields: <name>, <email>, <body>, <user_id> are required",
+			Message: "Fields: <body> are required",
 		})
 	}
 
 	/* Validate characters request field */
-	if len(commentModel.Name) < 3 || len(commentModel.Email) < 3 || len(commentModel.Body) < 3 {
+	if len(commentModel.Body) < 3 {
 		return c.JSON(http.StatusBadRequest, MessageResponse{
 			Status:  "error",
-			Message: "Fields: <name>, <email>, <body> must be more than 2 characters",
-		})
-	}
-
-	/* Check for valid email */
-	if !isEmailValid(commentModel.Email) {
-		return c.JSON(http.StatusBadRequest, MessageResponse{
-			Status:  "error",
-			Message: "email is not valid",
+			Message: "Field: <body> must be more than 2 characters",
 		})
 	}
 
@@ -180,6 +178,24 @@ func UpdateCommentByID(c echo.Context) error {
 		})
 	}
 
+	tokenString := c.Request().Header.Get("Authorization")
+	token, err := decodeToken(tokenString)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, MessageResponse{
+			Status:  "error",
+			Message: "Failed to decode you token",
+		})
+	}
+	calimsMap := token.Claims.(jwt.MapClaims)
+
+	if commetsData.UserId != int64(calimsMap["id"].(float64)) {
+		return c.JSON(http.StatusForbidden, MessageResponse{
+			Status:  "error",
+			Message: "Failed to edit, insufficient access rights",
+		})
+	}
+
+	commentModel.PostId = commetsData.PostId
 	models.DB.Model(&models.Comments{}).Where("id = ?", commentsID).Updates(models.Comments{Body: commentModel.Body})
 
 	return c.JSON(http.StatusOK, MessageResponse{
@@ -210,7 +226,30 @@ func DeleteCommentByID(c echo.Context) error {
 		})
 	}
 
-	models.DB.Delete(&commentModel)
+	tokenString := c.Request().Header.Get("Authorization")
+	token, err := decodeToken(tokenString)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, MessageResponse{
+			Status:  "error",
+			Message: "Failed to decode you token",
+		})
+	}
+	calimsMap := token.Claims.(jwt.MapClaims)
+
+	if commentModel.UserId != int64(calimsMap["id"].(float64)) {
+		return c.JSON(http.StatusForbidden, MessageResponse{
+			Status:  "error",
+			Message: "Failed to edit, insufficient access rights",
+		})
+	}
+
+	err = models.DB.Delete(&commentModel).Error
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, MessageResponse{
+			Status:  "error",
+			Message: err.Error(),
+		})
+	}
 
 	return c.JSON(http.StatusOK, MessageResponse{
 		Status:  "success",
